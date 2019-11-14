@@ -139,7 +139,7 @@ public class DictionaryTrie {
 	public static void main(String[] args) throws FileNotFoundException {
 		System.out.println("Initializing dictionary...");
 		DictionaryTrie dict = new DictionaryTrie();
-		Scanner dictFileIn = new Scanner (new File("words.3.txt"));
+		Scanner dictFileIn = new Scanner (new File("words.3plus.qu.txt"));
 		
 		String line;
 		int invalid = 0;
