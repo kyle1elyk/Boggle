@@ -1,11 +1,11 @@
 /*
 
-  Authors (group members):
-  Email addresses of group members:
-  Group name:
+  Authors (group members):  Kyle Stead, Justyn Diaz
+  Email addresses of group members: kstead2016@my.fit.edu, diazj2016@my.fit.edu 
+  Group name: 
 
-  Course:
-  Section:
+  Course: CSE 2010
+  Section: 3 (Java)
 
   Description of the overall algorithm and key data structures:
 
