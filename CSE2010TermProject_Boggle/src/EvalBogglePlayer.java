@@ -274,7 +274,7 @@ public class EvalBogglePlayer {
 
     /**
      * Calculates the square distance between the two location objects
-     *
+     * 
      * @param l1 The first Location
      * @param l2 The second Location
      * @return Returns the distance square the two locations
