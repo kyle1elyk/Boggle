@@ -71,8 +71,7 @@ public class EvalBogglePlayer {
         while (file.hasNext()) {
             dictionary.add(file.nextLine().toUpperCase());
         }
-        file.close();
-        
+
         //Preprocessing in BogglePlayer
         System.out.println("Preprocessing in BogglePlayer...");
         long startPreProcTime = bean.getCurrentThreadCpuTime();
@@ -139,6 +138,10 @@ public class EvalBogglePlayer {
             System.exit(-1);
         }
 
+       if (totalElapsedTime <= 0) // too small to measure, unlikely
+          totalElapsedTime = 1.0 / 1.0E9;
+       if (memory <= 0) // too small to measure, highly unlikely
+          memory = 1;
 
         //Calculate points for the words found
         int totalPoints = calculatePoints(words, board);
