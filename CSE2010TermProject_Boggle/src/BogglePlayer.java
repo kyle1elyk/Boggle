@@ -50,13 +50,15 @@ public class BogglePlayer {
 	// Location.java for details of the Location class
 
 	public Word[] getWords(char[][] board) {
-		
+	    for (int i = 0; i < 16; i++) {
+            dfs(board, i % 4, i / 4);
+        }
 		
 		Word[] myWords = new Word[20];
 		int wordCount = 0;
 		while (!validWords.isEmpty()) {
 			PriorityQueue.PQNode word = validWords.extractMin();
-
+			System.out.println(validWords.getLength());
 			myWords[wordCount++] = new Word(word.name);
 			
 			for (ShortLinkedList.Node tile: word.path) {
