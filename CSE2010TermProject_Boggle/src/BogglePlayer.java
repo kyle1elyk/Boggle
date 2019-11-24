@@ -58,12 +58,16 @@ public class BogglePlayer {
 		int wordCount = 0;
 		while (!validWords.isEmpty()) {
 			PriorityQueue.PQNode word = validWords.extractMin();
-			System.out.println(validWords.getLength());
-			myWords[wordCount++] = new Word(word.name);
-			
+			//System.out.println(validWords.getLength());
+			myWords[wordCount] = new Word(word.name);
+			//System.out.println(word.path == null);
+			//System.out.println(word.path);
 			for (ShortLinkedList.Node tile: word.path) {
+				
 				myWords[wordCount].addLetterRowAndCol(tile.getXY()[0], tile.getXY()[1]);
 			}
+			
+			wordCount++;
 			
 		}
 		return myWords;

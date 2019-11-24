@@ -76,8 +76,23 @@ public class ShortLinkedList implements Iterable<ShortLinkedList.Node>{
 	
 	@Override
 	public Iterator<ShortLinkedList.Node> iterator() {
-		// TODO Auto-generated method stub
-		return null;
+		
+		return new Iterator<ShortLinkedList.Node>() {
+			Node finger = head;
+			@Override
+			public boolean hasNext() {
+				
+				return finger != null;
+			}
+
+			@Override
+			public Node next() {
+				Node temp = finger;
+				finger = finger.next;
+				return temp;
+			}
+			
+		};
 	}
 
 	
