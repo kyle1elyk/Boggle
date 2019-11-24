@@ -1,10 +1,12 @@
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.StringJoiner;
 
-public class ShortLinkedList {
+public class ShortLinkedList implements Iterable<ShortLinkedList.Node>{
 	
 	public Node head;
 	public Node tail;
+	public int size = 0;
 	
 	public class Node {
 		public short value;
@@ -17,7 +19,7 @@ public class ShortLinkedList {
 		public void add(Node newNode) {
 			this.next = newNode;
 		}
-		private int[] getXY() {
+		public int[] getXY() {
 			return new int[] {value % 4, value / 4};
 		}
 
@@ -35,18 +37,20 @@ public class ShortLinkedList {
 			tail.next = new Node(value);
 			tail = tail.next;
 		}
-		
+		size ++;
 	}
 
 	public ShortLinkedList cloneAdd(int x, int y) {
 		ShortLinkedList cloned = this.clone();
 		cloned.add((short) (y * 4 + x));
+		
 		return cloned;
 	}
 	
 	@Override
 	public ShortLinkedList clone() {
 		ShortLinkedList cloned = new ShortLinkedList();
+		cloned.size = size;
 		Node finger = head;
 		while (finger != null) {
 			cloned.add(finger.value);
@@ -65,4 +69,20 @@ public class ShortLinkedList {
 		}
 		return String.format("[%s]", sj.toString());
 	}
+
+	public int size() {
+		return size;
+	}
+	
+	@Override
+	public Iterator<ShortLinkedList.Node> iterator() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	
+
+	
+
+	
 }
