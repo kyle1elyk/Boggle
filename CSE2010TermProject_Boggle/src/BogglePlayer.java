@@ -58,18 +58,14 @@ public class BogglePlayer {
 		int wordCount = 0;
 		while (!validWords.isEmpty()) {
 			PriorityQueue.PQNode word = validWords.extractMin();
-			//System.out.println(validWords.getLength());
 			myWords[wordCount] = new Word(word.name);
-			//System.out.println(word.path == null);
-			//System.out.println(word.path);
 			for (ShortLinkedList.Node tile: word.path) {
-				
-				myWords[wordCount].addLetterRowAndCol(tile.getXY()[0], tile.getXY()[1]);
+				myWords[wordCount].addLetterRowAndCol(tile.getXY()[1], tile.getXY()[0]);
 			}
 			
 			wordCount++;
-			
 		}
+		
 		return myWords;
 	}
 	
@@ -97,20 +93,7 @@ public class BogglePlayer {
         if (node.isLeaf && (validWords.getLength() < validWords.getMaxLength()
                 || currentString.length() > validWords.peekMin().name.length())) {
             if (!validWords.contains(currentString.replace("q", "qu"))) {
-                /*
-                 * if (validWords.getLength() == validWords.getMaxLength()) {
-                 * validWords.extractMin(); } validWords.insert(currentString.replace("q",
-                 * "qu"), (currentString.replace("q", "qu").length() * 26) +
-                 * (currentString.charAt(0) - 'a'), path);
-                 * 
-                 * validCounter++;
-                 */
-                
                 handleWord(currentString, path);
-                // System.out.printf("[%d, %d] = '%c'\r\n",x,y, board[y][x]);
-                // System.out.println(String.format("%16s",
-                // Integer.toBinaryString(flags)).replace(" ", "0"));
-                // System.out.printf("%d: %s\r\n", validCounter, currentString);
             }
         }
 /*
