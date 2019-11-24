@@ -87,7 +87,7 @@ public class DictionaryTrie {
 
 	public class Node {
 		public final char character;
-		private boolean isLeaf;
+		boolean isLeaf;
 		
 		// TODO: Check if it is worth the memory for instant access
 		private Node[] children;
