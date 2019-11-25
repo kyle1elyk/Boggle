@@ -1,6 +1,6 @@
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.Scanner;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 
 /*
 
@@ -23,16 +23,17 @@ public class BogglePlayer {
     final DictionaryTrie dict = new DictionaryTrie();
     
 	// initialize BogglePlayer with a file of English words
-	public BogglePlayer(String wordFile) throws FileNotFoundException {
-	    Scanner dictFileIn = new Scanner(new File(wordFile));
-        
-        String line;
-        while (dictFileIn.hasNextLine()) {
-            line = dictFileIn.nextLine();
-            dict.insertWord(line);
-        }
-      
-        dictFileIn.close();        
+	public BogglePlayer(String wordFile) throws IOException {
+		 
+		BufferedReader reader = new BufferedReader(new FileReader(wordFile));
+		String line = "";
+		while (line != null) {
+			
+			line = reader.readLine();
+			
+			if (line != null) dict.insertWord(line);
+		}
+		reader.close();
 	}
 
 	// based on the board, find valid words
