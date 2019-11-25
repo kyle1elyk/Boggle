@@ -11,16 +11,16 @@ import java.util.Scanner;
   Course: CSE 2010
   Section: 3 (Java)
 
-  Description of the overall algorithm and key data structures:
-
+  Description of the overall algorithm and key data structures: 
+  
 */
 
 public class BogglePlayer {
+	// Used to store and update valid words.
     PriorityQueue validWords = new PriorityQueue(20);
 
-    // static String searchTerm = "sparteries";
+    // Trie that stores all words passed in from the input file.
     final DictionaryTrie dict = new DictionaryTrie();
-    final PriorityQueue topSeeds = new PriorityQueue(50);
     
 	// initialize BogglePlayer with a file of English words
 	public BogglePlayer(String wordFile) throws FileNotFoundException {
@@ -33,7 +33,6 @@ public class BogglePlayer {
         }
       
         dictFileIn.close();        
-
 	}
 
 	// based on the board, find valid words
@@ -48,17 +47,24 @@ public class BogglePlayer {
 	//
 	// See Word.java for details of the Word class and
 	// Location.java for details of the Location class
-
 	public Word[] getWords(char[][] board) {
+		// Performs depth-first search on each individual tile.
 	    for (int i = 0; i < 16; i++) {
             dfs(board, i % 4, i / 4);
         }
 		
+	    /*
+	     * Initializes myWords with an array of acceptable words to 
+	     * pass into EvalBogglePlayer.java. Additionally, the row and
+	     * column associated with the words are stored alongside them.
+	     * This is used for later comparison in EvalBogglePlayer.java.
+	     */
 		Word[] myWords = new Word[20];
 		int wordCount = 0;
 		while (!validWords.isEmpty()) {
 			PriorityQueue.PQNode word = validWords.extractMin();
 			myWords[wordCount] = new Word(word.name);
+			
 			for (ShortLinkedList.Node tile: word.path) {
 				myWords[wordCount].addLetterRowAndCol(tile.getXY()[1], tile.getXY()[0]);
 			}
@@ -76,7 +82,7 @@ public class BogglePlayer {
     private void dfs(char[][] board, int x, int y, char flags, String currentString,
             DictionaryTrie.Node node, final ShortLinkedList parentPath) {
 
-        if (/* currentString.length() > 10 && */node == null)
+        if (node == null)
             return;
 
         /**
@@ -141,22 +147,37 @@ public class BogglePlayer {
 
     }
     
+	/**
+	 * If validWords is full, the minimum is extracted.
+	 * Additionally, if q is present in a word, it is replaced with qu.
+	 * 
+	 * @param word The word that is passed in to handle.
+	 * @param path The stored locations of each individual char in that word.
+	 */
     private void handleWord(String word, final ShortLinkedList path) {
         if (validWords.getLength() == validWords.getMaxLength()) {
             validWords.extractMin();
         }
+        
         validWords.insert(word.replace("q", "qu"),
                 (word.replace("q", "qu").length() * 26) + (word.charAt(0) - 'a'),
                 path);
-
     }
 
+	/**
+	 * @param x, y Checks if the requested row and column has been visited.
+	 * @return Boolean based on if the requested location was visited or not.
+	 */
     private static boolean wasVisited(int x, int y, char flags) {
         char flipped = (char) (1 << (x + (y * 4)));
 
         return (flipped & flags) == flipped;
     }
 
+	/**
+	 * @param x, y Visits a tile based on the row and column location on the boggle board.
+	 * @return The char that is located at the specified location.
+	 */
     private static char visit(int x, int y, char flags) {
         return (char) (flags | 1 << (x + (y * 4)));
     }

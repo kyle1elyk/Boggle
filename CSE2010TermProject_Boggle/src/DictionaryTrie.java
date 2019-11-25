@@ -6,7 +6,6 @@ import java.util.Scanner;
  * Stores boggle words in a Trie, accounting for the 'Qu' tile.
  * 
  * @author Kyle Stead, Justyn Diaz
- *
  */
 public class DictionaryTrie {
 	public Node root;
@@ -39,6 +38,7 @@ public class DictionaryTrie {
 			
 			finger = finger.getChild(wordArr[i]);
 		}
+		
 		finger.isLeaf = true;
 		return true;
 	}
@@ -61,7 +61,6 @@ public class DictionaryTrie {
 		char[] wordArr = word.toCharArray();
 		Node finger = root;
 		
-
 		for (int i = 0; i < wordArr.length; i++) {
 			// Skip over this iteration because this is the u in qu
 			if (wordArr[i] == 'u' && i > 0 && wordArr[i - 1] == 'q') {
@@ -76,14 +75,11 @@ public class DictionaryTrie {
 		}
 		
 		return finger.isLeaf;
-		
 	}
-	
 	
 	public DictionaryTrie() {
 		root = new Node('\0');
 	}
-
 
 	public class Node {
 		public final char character;
@@ -96,7 +92,6 @@ public class DictionaryTrie {
 			character = c;
 			children = new Node[26];
 		}
-		
 		
 		/**
 		 * @param c character below this node
@@ -159,7 +154,6 @@ public class DictionaryTrie {
 			System.out.println(dict.isValid(stdin.nextLine()));
 		}
 		stdin.close();
-		
 		
 	}
 }

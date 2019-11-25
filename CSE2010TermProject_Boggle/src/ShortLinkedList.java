@@ -2,6 +2,11 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.StringJoiner;
 
+/**
+ * 
+ * 
+ * @author Kyle Stead, Justyn Diaz 
+ */
 public class ShortLinkedList implements Iterable<ShortLinkedList.Node>{
 	
 	public Node head;

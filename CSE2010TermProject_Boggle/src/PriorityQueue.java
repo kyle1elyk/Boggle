@@ -1,6 +1,7 @@
-/*
- * Kyle Stead
- * cse2010
+/**
+ * Priority Queue to handle and update a list of words.
+ * 
+ * @author Kyle Stead, Justyn Diaz
  */
 public class PriorityQueue {
 
@@ -22,7 +23,6 @@ public class PriorityQueue {
 
 		@Override
 		public int compareTo(PQNode that) {
-
 			return this.priority - that.priority;
 		}
 	}
@@ -30,10 +30,12 @@ public class PriorityQueue {
 	private PQNode[] data;
 	private int length, maxLength;
 
+	// Returns the current length.
 	protected int getLength() {
 		return length;
 	}
 
+	// Returns the max length.
 	protected int getMaxLength() {
 		return maxLength;
 	}
@@ -42,9 +44,15 @@ public class PriorityQueue {
 		data = new PQNode[length];
 		this.maxLength = length;
 		this.length = 0;
-
 	}
 
+	/**
+	 * Inserts a word (with its path) in a PQ based on priority via points.
+	 * 
+	 * @param name The word
+	 * @param priority Points you can get from the word
+	 * @param path The row and column location of each char in a word.
+	 */
 	public void insert(final String name, final int priority, final ShortLinkedList path) {
 		if (!(length < maxLength)) {
 			return;
@@ -53,6 +61,7 @@ public class PriorityQueue {
 		int i = length;
 		data[length++] = new PQNode(name, priority, path);
 
+		// Data is set via the value of priority.
 		while (i != 0 && data[parentIndex(i)].compareTo(data[i]) > 0) {
 			PQNode temp = data[i];
 			data[i] = data[parentIndex(i)];
@@ -60,18 +69,19 @@ public class PriorityQueue {
 
 			i = parentIndex(i);
 		}
-
 	}
 
-	// did not end up needing
+	// Returns index of the parent of i.
 	public static int parentIndex(int i) {
 		return (i - 1) / 2;
 	}
 
+	// Returns index of the left child of i.
 	public static int leftChildIndex(int i) {
 		return (i * 2) + 1;
 	}
 
+	// Returns index of the right child of i.
 	public static int rightChildIndex(int i) {
 		return (i * 2) + 2;
 	}
@@ -80,11 +90,9 @@ public class PriorityQueue {
 		heapify(0);
 	}
 
-	
-	// heapify will find the smallest child and bring it up to the root, recursing each level down log n
+	// Heapify will find the smallest child and bring it up to the root, recursing each level down log n
 	public void heapify(int level) {
 		int leftIndex = leftChildIndex(level), rightIndex = rightChildIndex(level);
-
 		int minIndex = level;
 
 		// Swap element with smaller child
@@ -95,23 +103,23 @@ public class PriorityQueue {
 			minIndex = rightIndex;
 		}
 		
-		// do not swap in place
+		// Do not swap in place.
 		if (level != minIndex) {
-			// swap parent with smaller node
+			// Swap parent with smaller node.
 			PQNode temp = data[minIndex];
 			data[minIndex] = data[level];
 			data[level] = temp;
 			
 			heapify(minIndex);
 		}
-
 	}
 
-	// pull the smallest node and let the rest heapify, moving the last element up
+	// Pull the smallest node and let the rest heapify, moving the last element up.
 	public PQNode extractMin() {
 		if (length <= 0) {
 			return null;
 		}
+		
 		if (length == 1) {
 			return data[--length];
 		}
@@ -125,39 +133,26 @@ public class PriorityQueue {
 		return onHold;
 	}
 	
+	// Returns the node with minimum priority.
 	public PQNode peekMin() {
 		if (length == 0) {
 			return null;
 		}
+		
 		return new PQNode(data[0].name, data[0].priority, data[0].path);
 	}
 	
+	// Returns a boolean indiciating whether the requested word is present in the PQ.
 	public boolean contains(String word) {
 		for (int i = 0; i < length; i++) {
 			if (data[i].name.contentEquals(word)) return true;
 		}
+		
 		return false;
 	}
-
-	public boolean isNEmpty() {
-		return length != 0;
-	}
+	
+	// Return whether or not the PQ is empty.
 	public boolean isEmpty() {
 		return length == 0;
 	}
-	/*public static void main(String[] args) {
-		PriorityQueue pq = new PriorityQueue(16);
-		for (int i = 0; i < 16; i++) {
-			Random r = new Random();
-			int ri = r.nextInt(100000);
-
-			pq.insert(ri / 1000 + "k", ri);
-
-			System.out.println(Arrays.toString(pq.data));
-		}
-		for (int i = 0; i<16; i++) {
-			PQNode temp = pq.extractMin();
-			System.out.println(temp.priority);
-		}
-	}*/
 }
