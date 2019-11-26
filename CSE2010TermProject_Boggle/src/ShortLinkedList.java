@@ -3,12 +3,11 @@ import java.util.Iterator;
 import java.util.StringJoiner;
 
 /**
- * 
+ * Linked List for keeping track and updating the path of a word on the boggle board.
  * 
  * @author Kyle Stead, Justyn Diaz 
  */
 public class ShortLinkedList implements Iterable<ShortLinkedList.Node>{
-	
 	public Node head;
 	public Node tail;
 	public int size = 0;
@@ -21,9 +20,12 @@ public class ShortLinkedList implements Iterable<ShortLinkedList.Node>{
 			this.value = value;
 		}
 		
+		// Adds a newNode to the linked list.
 		public void add(Node newNode) {
 			this.next = newNode;
 		}
+		
+		// Returns the X and Y value.
 		public int[] getXY() {
 			return new int[] {value % 4, value / 4};
 		}
@@ -34,6 +36,10 @@ public class ShortLinkedList implements Iterable<ShortLinkedList.Node>{
 		}
 	}
 	
+	/*
+	 * Adds a short to the linked list.
+	 * Used in clone() and cloneAdd()
+	 */
 	private void add(short value) {
 		if (tail == null) {
 			head = new Node(value);
@@ -42,9 +48,11 @@ public class ShortLinkedList implements Iterable<ShortLinkedList.Node>{
 			tail.next = new Node(value);
 			tail = tail.next;
 		}
+		
 		size ++;
 	}
 
+	// Clones a linked list, and adds the passed in x and y integers.
 	public ShortLinkedList cloneAdd(int x, int y) {
 		ShortLinkedList cloned = this.clone();
 		cloned.add((short) (y * 4 + x));
@@ -53,40 +61,47 @@ public class ShortLinkedList implements Iterable<ShortLinkedList.Node>{
 	}
 	
 	@Override
+	// Clones a linked list, and returns the cloned version.
 	public ShortLinkedList clone() {
 		ShortLinkedList cloned = new ShortLinkedList();
 		cloned.size = size;
 		Node finger = head;
+		
 		while (finger != null) {
 			cloned.add(finger.value);
 			finger = finger.next;
 		}
+		
 		return cloned;
 	}
 	
 	@Override
+	// toString() method to determine how the linked list is represented as a string.
 	public String toString() {
 		StringJoiner sj = new StringJoiner(", ");
 		Node finger = head;
+		
 		while (finger != null) {
 			sj.add(finger.toString());
 			finger = finger.next;
 		}
+		
 		return String.format("[%s]", sj.toString());
 	}
 
+	// Returns the size of the linked list.
 	public int size() {
 		return size;
 	}
 	
 	@Override
+	// Iteratator for traveling through each node in the linked list.
 	public Iterator<ShortLinkedList.Node> iterator() {
-		
 		return new Iterator<ShortLinkedList.Node>() {
 			Node finger = head;
+			
 			@Override
 			public boolean hasNext() {
-				
 				return finger != null;
 			}
 
@@ -96,13 +111,6 @@ public class ShortLinkedList implements Iterable<ShortLinkedList.Node>{
 				finger = finger.next;
 				return temp;
 			}
-			
 		};
 	}
-
-	
-
-	
-
-	
 }
