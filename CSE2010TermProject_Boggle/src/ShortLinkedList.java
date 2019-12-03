@@ -13,11 +13,11 @@ public class ShortLinkedList implements Iterable<ShortLinkedList.Node>{
 	public int size = 0;
 	
 	public class Node {
-		public short value;
+		public short position;
 		public Node next;
 		
-		public Node(short value) {
-			this.value = value;
+		public Node(short position) {
+			this.position = position;
 		}
 		
 		// Adds a newNode to the linked list.
@@ -27,7 +27,7 @@ public class ShortLinkedList implements Iterable<ShortLinkedList.Node>{
 		
 		// Returns the X and Y value.
 		public int[] getXY() {
-			return new int[] {value % 4, value / 4};
+			return new int[] {position % 4, position / 4};
 		}
 
 		@Override
@@ -68,7 +68,7 @@ public class ShortLinkedList implements Iterable<ShortLinkedList.Node>{
 		Node finger = head;
 		
 		while (finger != null) {
-			cloned.add(finger.value);
+			cloned.add(finger.position);
 			finger = finger.next;
 		}
 		

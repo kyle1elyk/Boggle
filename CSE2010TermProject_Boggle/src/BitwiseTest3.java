@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
 
-public class BitwiseTest2 {
+public class BitwiseTest3 {
 	static long counter = 0;
 	static long validCounter = 0;
 	static PriorityQueue validWords = new PriorityQueue(20);
@@ -35,8 +35,83 @@ public class BitwiseTest2 {
 		}
 		dictFileIn.close();
 		System.out.println(" finished\r\n");
-		
-		for (int runCount = 0; runCount < 1000; runCount++) {
+		boolean threaded = true;
+		int iterationCount = 100000;
+		 if(!threaded) {
+			 
+		 } else {
+			final int CORES = 16;
+			for (int it = 0; it < CORES; it++) {
+				//final int iterLocation = i * (iterationCount / CORES);
+				Thread t = new Thread(new Runnable() {
+					
+					@Override
+					public void run() {
+						
+						
+						
+						long counterT = 0;
+						long validCounterT = 0;
+						PriorityQueue validWordsT = new PriorityQueue(20);
+						char[][] boardT = new char[4][4];
+						
+						
+						for (int it2 = 0; it2 < iterationCount / CORES; it2++) {
+							counter = 0;
+							validCounter = 0;
+							validWords = new PriorityQueue(20);
+							boardT = new char[4][4];
+							
+							long seed = (long)(Math.random() * Long.MAX_VALUE);
+							Random rnd = new Random(seed);
+							final ArrayList<String> boggleDices = new ArrayList<>(Arrays.asList(
+					            "AAEEGN", "ABBJOO", "ACHOPS", "AFFKPS", "AOOTTW", "CIMOTU", "DEILRX", "DELRVY",
+					            "DISTTY", "EEGHNW", "EEINSU", "EHRTVW", "EIOSST", "ELRTTY", "HIMNUQ", "HLNNRZ"));
+							int length = boggleDices.size();
+							for (int i = 0; i < 4; i++) {
+					            for (int j = 0; j < 4; j++) {
+					                int diceIndex = rnd.nextInt(length);
+					                String dice = boggleDices.get(diceIndex);
+					                boardT[i][j] = dice.charAt(rnd.nextInt(6));
+					                boggleDices.set(diceIndex, boggleDices.get(length - 1));
+					                boggleDices.set(length - 1, dice);
+					                length--;
+					            }
+					        }
+							
+							long iTime = System.nanoTime();
+							
+							for (int i = 0; i < 16; i++) {
+								dfs(boardT, i % 4, i / 4, validWordsT);
+							}
+							
+							long fTime = System.nanoTime();
+							long fMem = runtime.totalMemory() - runtime.freeMemory();
+							
+							int i = 0;
+							int score = 0;
+							
+							double timeElapse = (fTime - iTime) / 1E9;
+							long memUsed = (fMem - iMem);
+					
+							while (!validWordsT.isEmpty()) {
+								PriorityQueue.PQNode word = validWordsT.extractMin();
+								String currentString = word.name;
+								double iScore = Math.pow(currentString.length() - 2, 2);
+								//System.out.printf("%-22s %5s %s\r\n",String.format("%2d: %s", ++i, currentString),  "(" + (int) iScore + ")", word.path);
+					
+								score += iScore;
+							}
+							handleSeed(score, seed);
+						}
+
+					}
+					});
+				t.run();
+			}
+		}
+
+		for (int runCount = 0; runCount < 0; runCount++) {
 			
 			counter = 0;
 			validCounter = 0;
@@ -97,27 +172,11 @@ public class BitwiseTest2 {
 			System.out.println();
 			
 			long iTime = System.nanoTime();
-			boolean threaded = false;
-			if (!threaded) {
-				for (int i = 0; i < 16; i++) {
-					dfs(board, i % 4, i / 4);
-				}
-			} else {
-				final int CORES = 16;
-				for (int i = 0; i < CORES; i++) {
-					final int iterLocation = i * (16 / CORES);
-					Thread t = new Thread(new Runnable() {
-						@Override
-						public void run() {
-							for (int i = 0; i < 16 / CORES; i++) {
-								dfs(board, (iterLocation + i) % 4, (iterLocation + i) / 4);
-							}
-	
-						}
-						});
-					t.run();
-				}
+			
+			for (int i = 0; i < 16; i++) {
+				//dfs(board, i % 4, i / 4);
 			}
+			
 			
 			long fTime = System.nanoTime();
 			long fMem = runtime.totalMemory() - runtime.freeMemory();
@@ -166,12 +225,12 @@ public class BitwiseTest2 {
 		System.out.printf("Top seeds saved to: %s\r\n", f.getAbsolutePath());
 	}
 
-	protected static void dfs(char[][] board, int x, int y) {
-		dfs(board, x, y, '\0', "", dict.root.getChild(board[y][x]), new ShortLinkedList());
+	protected static void dfs(char[][] board, int x, int y, PriorityQueue validWords) {
+		dfs(board, x, y, '\0', "", dict.root.getChild(board[y][x]), new ShortLinkedList(), validWords);
 	}
 
 	private static void dfs(char[][] board, int x, int y, char flags, String currentString,
-			DictionaryTrie.Node node, final ShortLinkedList parentPath) {
+			DictionaryTrie.Node node, final ShortLinkedList parentPath, PriorityQueue validWords) {
 
 		if (/* currentString.length() > 10 && */node == null)
 			return;
@@ -187,7 +246,7 @@ public class BitwiseTest2 {
 
 		currentString += c;
 
-		counter++;
+		//counter++;
 
 		if (node.isLeaf && (validWords.getLength() < validWords.getMaxLength()
 				|| currentString.length() > validWords.peekMin().name.length())) {
@@ -201,7 +260,7 @@ public class BitwiseTest2 {
 				 * validCounter++;
 				 */
 				
-				handleWord(currentString, path);
+				handleWord(currentString, path, validWords);
 				// System.out.printf("[%d, %d] = '%c'\r\n",x,y, board[y][x]);
 				// System.out.println(String.format("%16s",
 				// Integer.toBinaryString(flags)).replace(" ", "0"));
@@ -222,38 +281,49 @@ public class BitwiseTest2 {
 		if (y > 0) {
 			if (x > 0 && !wasVisited(x - 1, y - 1, thisFlag))
 				if (node.hasChild(board[y - 1][x - 1]))
-					dfs(board, x - 1, y - 1, thisFlag, currentString, node.getChild(board[y - 1][x - 1]), path); // 1
+					dfs(board, x - 1, y - 1, thisFlag, currentString, node.getChild(board[y - 1][x - 1]), path, validWords); // 1
 			if (!wasVisited(x, y - 1, thisFlag))
 				if (node.hasChild(board[y - 1][x]))
-					dfs(board, x, y - 1, thisFlag, currentString, node.getChild(board[y - 1][x]), path); // 2
+					dfs(board, x, y - 1, thisFlag, currentString, node.getChild(board[y - 1][x]), path, validWords); // 2
 			if (x < 3 && !wasVisited(x + 1, y - 1, thisFlag))
 				if (node.hasChild(board[y - 1][x + 1]))
-					dfs(board, x + 1, y - 1, thisFlag, currentString, node.getChild(board[y - 1][x + 1]), path); // 3
+					dfs(board, x + 1, y - 1, thisFlag, currentString, node.getChild(board[y - 1][x + 1]), path, validWords); // 3
 		}
 
 		if (x < 3 && !wasVisited(x + 1, y, thisFlag))
 			if (node.hasChild(board[y][x + 1]))
-				dfs(board, x + 1, y, thisFlag, currentString, node.getChild(board[y][x + 1]), path); // 4
+				dfs(board, x + 1, y, thisFlag, currentString, node.getChild(board[y][x + 1]), path, validWords); // 4
 
 		if (y < 3) {
 			if (x < 3 && !wasVisited(x + 1, y + 1, thisFlag))
 				if (node.hasChild(board[y + 1][x + 1]))
-					dfs(board, x + 1, y + 1, thisFlag, currentString, node.getChild(board[y + 1][x + 1]), path); // 5
+					dfs(board, x + 1, y + 1, thisFlag, currentString, node.getChild(board[y + 1][x + 1]), path, validWords); // 5
 			if (!wasVisited(x, y + 1, thisFlag))
 				if (node.hasChild(board[y + 1][x]))
-					dfs(board, x, y + 1, thisFlag, currentString, node.getChild(board[y + 1][x]), path); // 6
+					dfs(board, x, y + 1, thisFlag, currentString, node.getChild(board[y + 1][x]), path, validWords); // 6
 			if (x > 0 && !wasVisited(x - 1, y + 1, thisFlag))
 				if (node.hasChild(board[y + 1][x - 1]))
-					dfs(board, x - 1, y + 1, thisFlag, currentString, node.getChild(board[y + 1][x - 1]), path); // 7
+					dfs(board, x - 1, y + 1, thisFlag, currentString, node.getChild(board[y + 1][x - 1]), path, validWords); // 7
 		}
 
 		if (x > 0 && !wasVisited(x - 1, y, thisFlag))
 			if (node.hasChild(board[y][x - 1]))
-				dfs(board, x - 1, y, thisFlag, currentString, node.getChild(board[y][x - 1]), path); // 8
+				dfs(board, x - 1, y, thisFlag, currentString, node.getChild(board[y][x - 1]), path, validWords); // 8
 
 	}
 	
-	private synchronized static void handleWord(String word, final ShortLinkedList path) {
+	private synchronized static void handleSeed(int score, long seed) {
+		System.out.printf("[%05d] %d\r\n", score, seed);
+		if (topSeeds.getLength() >= topSeeds.getMaxLength() && score > topSeeds.peekMin().priority) {
+			topSeeds.extractMin();
+			topSeeds.insert(String.valueOf(seed), score, null);
+		} else if(topSeeds.getLength() < topSeeds.getMaxLength()) {
+			topSeeds.insert(String.valueOf(seed), score, null);
+		}
+		
+	}
+	
+	private synchronized static void handleWord(String word, final ShortLinkedList path, PriorityQueue validWords) {
 		if (validWords.getLength() == validWords.getMaxLength()) {
 			validWords.extractMin();
 		}

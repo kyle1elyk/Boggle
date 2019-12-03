@@ -36,6 +36,9 @@ public class BogglePlayer {
 		reader.close();
 	}
 
+	
+	char[][] board;
+	
 	// based on the board, find valid words
 	//
 	// board: 4x4 board, each element is a letter, 'Q' represents "QU",
@@ -49,6 +52,8 @@ public class BogglePlayer {
 	// See Word.java for details of the Word class and
 	// Location.java for details of the Location class
 	public Word[] getWords(char[][] board) {
+		
+		this.board = board;
 		// Performs depth-first search on each individual tile.
 	    for (int i = 0; i < 16; i++) {
             dfs(board, i % 4, i / 4);
@@ -77,12 +82,22 @@ public class BogglePlayer {
 	}
 	
 	protected void dfs(char[][] board, int x, int y) {
-        dfs(board, x, y, '\0', "", dict.root.getChild(board[y][x]), new ShortLinkedList());
+		
+		dfs(/* board, */x, y, '\0', "", dict.root.getChild(board[y][x]), new ShortLinkedList());
     }
 
-    private void dfs(char[][] board, int x, int y, char flags, String currentString,
+    /**
+     * Recursive call to locate the best possible words in the board via partial dfs, additionally terminated by trie
+     * @param x current X location in board to search
+     * @param y current Y location in board to search
+     * @param flags represents bit pattern of spaces visited (16 bits ordered LTR, then top-down)
+     * @param currentString current path visited, faster than using parent path
+     * @param node Current node in the dictionary trie, children represent possible words
+     * @param parentPath utilized for creating path required
+     */
+	private void dfs(/* char[][] board, */int x, int y, char flags, String currentString,
             DictionaryTrie.Node node, final ShortLinkedList parentPath) {
-
+		// board argument Only needed if this were a static implementation or multithreaded
         if (node == null)
             return;
 
@@ -114,37 +129,37 @@ public class BogglePlayer {
         --------- check if (x > 0)
         
 */
-        if (y > 0) {
-            if (x > 0 && !wasVisited(x - 1, y - 1, thisFlag))
-                if (node.hasChild(board[y - 1][x - 1]))
-                    dfs(board, x - 1, y - 1, thisFlag, currentString, node.getChild(board[y - 1][x - 1]), path); // 1
+        if (y > 0) {	// Do not check above if on top edge
+            if (x > 0 && !wasVisited(x - 1, y - 1, thisFlag))	// Only check if node was not visited yet
+                if (node.hasChild(board[y - 1][x - 1]))			// and that there is the possibility of a word at this location
+					dfs(/* board, */ x - 1, y - 1, thisFlag, currentString, node.getChild(board[y - 1][x - 1]), path); // 1
             if (!wasVisited(x, y - 1, thisFlag))
                 if (node.hasChild(board[y - 1][x]))
-                    dfs(board, x, y - 1, thisFlag, currentString, node.getChild(board[y - 1][x]), path); // 2
+					dfs(/* board, */x, y - 1, thisFlag, currentString, node.getChild(board[y - 1][x]), path); // 2
             if (x < 3 && !wasVisited(x + 1, y - 1, thisFlag))
                 if (node.hasChild(board[y - 1][x + 1]))
-                    dfs(board, x + 1, y - 1, thisFlag, currentString, node.getChild(board[y - 1][x + 1]), path); // 3
+					dfs(/* board, */x + 1, y - 1, thisFlag, currentString, node.getChild(board[y - 1][x + 1]), path); // 3
         }
 
-        if (x < 3 && !wasVisited(x + 1, y, thisFlag))
+        if (x < 3 && !wasVisited(x + 1, y, thisFlag))	// Do not check to the right if on the right edge
             if (node.hasChild(board[y][x + 1]))
-                dfs(board, x + 1, y, thisFlag, currentString, node.getChild(board[y][x + 1]), path); // 4
+				dfs(/* board, */x + 1, y, thisFlag, currentString, node.getChild(board[y][x + 1]), path); // 4
 
-        if (y < 3) {
+        if (y < 3) {	// Do not check below if on bottom edge
             if (x < 3 && !wasVisited(x + 1, y + 1, thisFlag))
                 if (node.hasChild(board[y + 1][x + 1]))
-                    dfs(board, x + 1, y + 1, thisFlag, currentString, node.getChild(board[y + 1][x + 1]), path); // 5
+					dfs(/* board, */x + 1, y + 1, thisFlag, currentString, node.getChild(board[y + 1][x + 1]), path); // 5
             if (!wasVisited(x, y + 1, thisFlag))
                 if (node.hasChild(board[y + 1][x]))
-                    dfs(board, x, y + 1, thisFlag, currentString, node.getChild(board[y + 1][x]), path); // 6
+					dfs(/* board, */x, y + 1, thisFlag, currentString, node.getChild(board[y + 1][x]), path); // 6
             if (x > 0 && !wasVisited(x - 1, y + 1, thisFlag))
                 if (node.hasChild(board[y + 1][x - 1]))
-                    dfs(board, x - 1, y + 1, thisFlag, currentString, node.getChild(board[y + 1][x - 1]), path); // 7
+					dfs(/* board, */x - 1, y + 1, thisFlag, currentString, node.getChild(board[y + 1][x - 1]), path); // 7
         }
 
-        if (x > 0 && !wasVisited(x - 1, y, thisFlag))
+        if (x > 0 && !wasVisited(x - 1, y, thisFlag))	// Do not check to the left if on the left edge
             if (node.hasChild(board[y][x - 1]))
-                dfs(board, x - 1, y, thisFlag, currentString, node.getChild(board[y][x - 1]), path); // 8
+				dfs(/* board, */x - 1, y, thisFlag, currentString, node.getChild(board[y][x - 1]), path); // 8
 
     }
     
@@ -166,20 +181,26 @@ public class BogglePlayer {
     }
 
 	/**
-	 * @param x, y Checks if the requested row and column has been visited.
+	 * Checks if the requested row and column has been visited.
+	 * @param x Column to be checked
+	 * @param y Row to be checked
+	 * @param flags bit pattern to check if node was visited
 	 * @return Boolean based on if the requested location was visited or not.
 	 */
-    private static boolean wasVisited(int x, int y, char flags) {
+    private static boolean wasVisited(final int x, final int y, final char flags) {
         char flipped = (char) (1 << (x + (y * 4)));
 
         return (flipped & flags) == flipped;
     }
 
 	/**
-	 * @param x, y Visits a tile based on the row and column location on the boggle board.
+	 * Visits a tile based on the row and column location on the boggle board.
+	 * @param x Column to be visited
+	 * @param y Row to be visited
+	 * @param flags bit pattern that is used to generate new pattern
 	 * @return The char that is located at the specified location.
 	 */
-    private static char visit(int x, int y, char flags) {
+    private static char visit(final int x, final int y, final char flags) {
         return (char) (flags | 1 << (x + (y * 4)));
     }
 

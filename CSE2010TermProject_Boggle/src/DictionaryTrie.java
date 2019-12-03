@@ -94,6 +94,8 @@ public class DictionaryTrie {
 		}
 		
 		/**
+		 * Creates a new node if it doesn't exist, otherwise returning the existing one
+		 * 
 		 * @param c character below this node
 		 * @return The node of the character specified, created if does not exist
 		 * @throws IllegalArgumentException When the char passed in is not between A and Z
@@ -115,6 +117,8 @@ public class DictionaryTrie {
 		}
 		
 		/**
+		 * Returns if there is a child of this node, representing a word existing down this path
+		 * 
 		 * @param c character below this node
 		 * @return True if the child exists
 		 * @throws IllegalArgumentException When the char passed in is not between A and Z
