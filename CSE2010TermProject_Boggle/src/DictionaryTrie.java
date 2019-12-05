@@ -8,7 +8,7 @@ import java.util.Scanner;
  * @author Kyle Stead, Justyn Diaz
  */
 public class DictionaryTrie {
-	public Node root;
+	public DNode root;
 	
 	/**
 	 * Adds words to the dictionary. Will not add words that contain non A-Z characters
@@ -27,7 +27,7 @@ public class DictionaryTrie {
 		}
 		
 		char[] wordArr = word.toCharArray();
-		Node finger = root;
+		DNode finger = root;
 		
 		for (int i = 0; i < wordArr.length; i++) {
 			
@@ -39,7 +39,7 @@ public class DictionaryTrie {
 			finger = finger.getChild(wordArr[i]);
 		}
 		
-		finger.isLeaf = true;
+		finger.character = Character.toUpperCase(finger.character);
 		return true;
 	}
 	
@@ -59,7 +59,7 @@ public class DictionaryTrie {
 		}
 		
 		char[] wordArr = word.toCharArray();
-		Node finger = root;
+		DNode finger = root;
 		
 		for (int i = 0; i < wordArr.length; i++) {
 			// Skip over this iteration because this is the u in qu
@@ -73,25 +73,26 @@ public class DictionaryTrie {
 			
 			finger = finger.getChild(wordArr[i]);
 		}
-		
-		return finger.isLeaf;
+		;
+		return Character.isUpperCase(finger.character); //finger.isLeaf;
 	}
 	
 	public DictionaryTrie() {
-		root = new Node('\0');
+		root = new DNode('\0');
 	}
 
-	public class Node {
-		public final char character;
-		boolean isLeaf;
+	public class DNode {
+		public char character;
+		
 		
 		// TODO: Check if it is worth the memory for instant access
-		private Node[] children;
+		private DNode[] children;
 		
-		private Node(final char c) {
+		private DNode(final char c) {
 			character = c;
-			children = new Node[26];
+			children = new DNode[26];
 		}
+		
 		
 		/**
 		 * Creates a new node if it doesn't exist, otherwise returning the existing one
@@ -100,7 +101,7 @@ public class DictionaryTrie {
 		 * @return The node of the character specified, created if does not exist
 		 * @throws IllegalArgumentException When the char passed in is not between A and Z
 		 */
-		public Node getChild(char c) {
+		public DNode getChild(char c) {
 			
 			// The "- 'a'" lets us set 'a' as 0, and 'z' as 25 when converted from ascii
 			int index = Character.toLowerCase(c) - 'a';
@@ -110,7 +111,7 @@ public class DictionaryTrie {
 			
 			// First time we have seen c
 			if (children[index] == null) {
-				children[index] = new Node(c);
+				children[index] = new DNode(c);
 			}
 			
 			return children[index];
@@ -133,6 +134,11 @@ public class DictionaryTrie {
 			// First time we have seen c
 			return (children[index] != null);
 		}
+
+		public boolean isLeaf() {
+			return Character.isUpperCase(character);
+		}
+
 	}
 	
 	public static void main(String[] args) throws FileNotFoundException {

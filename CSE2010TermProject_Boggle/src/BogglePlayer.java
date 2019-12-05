@@ -96,7 +96,7 @@ public class BogglePlayer {
      * @param parentPath utilized for creating path required
      */
 	private void dfs(/* char[][] board, */int x, int y, char flags, String currentString,
-            DictionaryTrie.Node node, final PathStructure parentPath) {
+            DictionaryTrie.DNode node, final PathStructure parentPath) {
 		// board argument Only needed if this were a static implementation or multithreaded
         if (node == null)
             return;
@@ -112,7 +112,7 @@ public class BogglePlayer {
 
         currentString += c;
 
-        if (node.isLeaf && (validWords.getLength() < validWords.getMaxLength()
+        if (node.isLeaf() && (validWords.getLength() < validWords.getMaxLength()
                 || currentString.length() > validWords.peekMin().name.length())) {
             if (!validWords.contains(currentString.replace("q", "qu"))) {
                 handleWord(currentString, path);

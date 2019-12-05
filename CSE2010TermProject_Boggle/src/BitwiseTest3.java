@@ -230,7 +230,7 @@ public class BitwiseTest3 {
 	}
 
 	private static void dfs(char[][] board, int x, int y, char flags, String currentString,
-			DictionaryTrie.Node node, final PathStructure parentPath, PriorityQueue validWords) {
+			DictionaryTrie.DNode node, final PathStructure parentPath, PriorityQueue validWords) {
 
 		if (/* currentString.length() > 10 && */node == null)
 			return;
@@ -248,7 +248,7 @@ public class BitwiseTest3 {
 
 		//counter++;
 
-		if (node.isLeaf && (validWords.getLength() < validWords.getMaxLength()
+		if (node.isLeaf() && (validWords.getLength() < validWords.getMaxLength()
 				|| currentString.length() > validWords.peekMin().name.length())) {
 			if (!validWords.contains(currentString.replace("q", "qu"))) {
 				/*

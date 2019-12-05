@@ -15,8 +15,6 @@ public final byte[] path;
 			this.xy = xy;
 		}
 		public int[] getXY() {
-			//System.out.printf("[%4s : %4s] ", Integer.toBinaryString(xy), Integer.toBinaryString(xy & 0x1100));
-			//System.out.println((xy & 0x1100) >> 2);
 			return new int[] {(xy & 0b1100) >>> 2, xy & 0b11};
 		}
 		
