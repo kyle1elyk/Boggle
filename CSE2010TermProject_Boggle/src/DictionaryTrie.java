@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Arrays;
 import java.util.Scanner;
 
 /**
@@ -90,7 +91,7 @@ public class DictionaryTrie {
 		
 		private DNode(final char c) {
 			character = c;
-			children = new DNode[26];
+			children = new DNode[0];
 		}
 		
 		
@@ -108,6 +109,10 @@ public class DictionaryTrie {
 			
 			// Argument is not a letter A - Z
 			if (index < 0 || index > 25 ) throw new IllegalArgumentException();
+			
+			if (children.length < index + 1) {
+				children = Arrays.copyOf(children, index + 1);
+			}
 			
 			// First time we have seen c
 			if (children[index] == null) {
@@ -130,6 +135,8 @@ public class DictionaryTrie {
 			
 			// Argument is not a letter A - Z
 			if (index < 0 || index > 25 ) throw new IllegalArgumentException();
+			
+			if (index >= children.length) return false;
 			
 			// First time we have seen c
 			return (children[index] != null);
