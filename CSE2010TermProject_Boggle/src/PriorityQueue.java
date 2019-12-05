@@ -7,10 +7,10 @@ public class PriorityQueue {
 
 	 class PQNode implements Comparable<PQNode> {
 		String name;
-		ShortLinkedList path;
+		PathStructure path;
 		int priority;
 		
-		public PQNode(final String name, final int priority, final ShortLinkedList path) {
+		public PQNode(final String name, final int priority, final PathStructure path) {
 			this.name = name;
 			this.priority = priority;
 			this.path = path;
@@ -53,7 +53,7 @@ public class PriorityQueue {
 	 * @param priority Points you can get from the word
 	 * @param path The row and column location of each char in a word.
 	 */
-	public void insert(final String name, final int priority, final ShortLinkedList path) {
+	public void insert(final String name, final int priority, final PathStructure path) {
 		if (!(length < maxLength)) {
 			return;
 		}

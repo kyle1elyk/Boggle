@@ -71,7 +71,7 @@ public class BogglePlayer {
 			PriorityQueue.PQNode word = validWords.extractMin();
 			myWords[wordCount] = new Word(word.name);
 			
-			for (ShortLinkedList.Node tile: word.path) {
+			for (PathStructure.Node tile: word.path) {
 				myWords[wordCount].addLetterRowAndCol(tile.getXY()[1], tile.getXY()[0]);
 			}
 			
@@ -83,7 +83,7 @@ public class BogglePlayer {
 	
 	protected void dfs(char[][] board, int x, int y) {
 		
-		dfs(/* board, */x, y, '\0', "", dict.root.getChild(board[y][x]), new ShortLinkedList());
+		dfs(/* board, */x, y, '\0', "", dict.root.getChild(board[y][x]), new PathStructure());
     }
 
     /**
@@ -96,7 +96,7 @@ public class BogglePlayer {
      * @param parentPath utilized for creating path required
      */
 	private void dfs(/* char[][] board, */int x, int y, char flags, String currentString,
-            DictionaryTrie.Node node, final ShortLinkedList parentPath) {
+            DictionaryTrie.Node node, final PathStructure parentPath) {
 		// board argument Only needed if this were a static implementation or multithreaded
         if (node == null)
             return;
@@ -108,7 +108,7 @@ public class BogglePlayer {
 
         char c = board[y][x];
         
-        ShortLinkedList path = parentPath.cloneAdd(x, y);
+        PathStructure path = parentPath.cloneAdd(x, y);
 
         currentString += c;
 
@@ -170,7 +170,7 @@ public class BogglePlayer {
 	 * @param word The word that is passed in to handle.
 	 * @param path The stored locations of each individual char in that word.
 	 */
-    private void handleWord(String word, final ShortLinkedList path) {
+    private void handleWord(String word, final PathStructure path) {
         if (validWords.getLength() == validWords.getMaxLength()) {
             validWords.extractMin();
         }

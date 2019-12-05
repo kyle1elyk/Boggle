@@ -226,11 +226,11 @@ public class BitwiseTest3 {
 	}
 
 	protected static void dfs(char[][] board, int x, int y, PriorityQueue validWords) {
-		dfs(board, x, y, '\0', "", dict.root.getChild(board[y][x]), new ShortLinkedList(), validWords);
+		dfs(board, x, y, '\0', "", dict.root.getChild(board[y][x]), new PathStructure(), validWords);
 	}
 
 	private static void dfs(char[][] board, int x, int y, char flags, String currentString,
-			DictionaryTrie.Node node, final ShortLinkedList parentPath, PriorityQueue validWords) {
+			DictionaryTrie.Node node, final PathStructure parentPath, PriorityQueue validWords) {
 
 		if (/* currentString.length() > 10 && */node == null)
 			return;
@@ -242,7 +242,7 @@ public class BitwiseTest3 {
 
 		char c = board[y][x];
 		
-		ShortLinkedList path = parentPath.cloneAdd(x, y);
+		PathStructure path = parentPath.cloneAdd(x, y);
 
 		currentString += c;
 
@@ -323,7 +323,7 @@ public class BitwiseTest3 {
 		
 	}
 	
-	private synchronized static void handleWord(String word, final ShortLinkedList path, PriorityQueue validWords) {
+	private synchronized static void handleWord(String word, final PathStructure path, PriorityQueue validWords) {
 		if (validWords.getLength() == validWords.getMaxLength()) {
 			validWords.extractMin();
 		}
