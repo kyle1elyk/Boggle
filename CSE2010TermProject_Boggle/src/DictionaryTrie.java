@@ -86,12 +86,13 @@ public class DictionaryTrie {
 		public char character;
 		
 		
-		// TODO: Check if it is worth the memory for instant access
-		private DNode[] children;
-		
+		// TOD: Check if it is worth the memory for instant access
+		// TODO: private DNode[] children;
+		private ChildHashSet children;
 		private DNode(final char c) {
 			character = c;
-			children = new DNode[0];
+			// TODO: children = new DNode[0];
+			children = new ChildHashSet();
 		}
 		
 		
@@ -109,7 +110,7 @@ public class DictionaryTrie {
 			
 			// Argument is not a letter A - Z
 			if (index < 0 || index > 25 ) throw new IllegalArgumentException();
-			
+			/* TODO:
 			if (children.length < index + 1) {
 				children = Arrays.copyOf(children, index + 1);
 			}
@@ -120,7 +121,20 @@ public class DictionaryTrie {
 			}
 			
 			return children[index];
+			*/
+			
+			DNode child = children.hasChild(c);
+			if (child == null) {
+				child = children.putChild(c);
+				//System.out.print("1");
+			} else {
+				//System.out.print("2");
+			}
+			//System.out.println("A");
+			return child;
 		}
+		
+		
 		
 		/**
 		 * Returns if there is a child of this node, representing a word existing down this path
@@ -135,17 +149,82 @@ public class DictionaryTrie {
 			
 			// Argument is not a letter A - Z
 			if (index < 0 || index > 25 ) throw new IllegalArgumentException();
-			
+			return children.hasChild(c) != null?true:false;
+			/*
 			if (index >= children.length) return false;
 			
 			// First time we have seen c
 			return (children[index] != null);
+			*/
 		}
 
 		public boolean isLeaf() {
 			return Character.isUpperCase(character);
 		}
 
+		
+		private class ChildHashSet {
+
+			DNode[] children;
+			public ChildHashSet() {
+				children = new DNode[0];
+			}
+			
+			DNode hasChild(char c) {
+				//System.out.print("hasChild " + c + " ");
+				if (children.length == 0) {
+					//System.out.println(" n1");
+					return null;
+				}
+				int index = Character.toLowerCase(c) - 'a';
+				int searchPosStart = index % children.length;
+				for (int i = 0; i < children.length; i++) {
+					if (children[(i + searchPosStart) % children.length] == null) {
+						//System.out.println(" n2");
+						return null;
+					}
+					if (Character.toLowerCase(children[(i + searchPosStart) % children.length].character) == Character.toLowerCase(c)) {
+						//System.out.println(" .");
+						return children[(i + searchPosStart) % children.length];
+					}
+				}
+				//System.out.println(" n3");
+				return null;
+			}
+			
+			DNode putChild(char c) {
+				DNode child = hasChild(c);
+				if (child != null) return child;
+				DNode[] newChildren = new DNode[children.length + 1];
+
+				int index = Character.toLowerCase(c) - 'a';
+				int searchPosStart = index % newChildren.length;
+				
+				for (DNode childi:children) {
+					
+					int tryIndex = searchPosStart % newChildren.length;
+					
+					while (newChildren[tryIndex] != null) {
+						tryIndex = (tryIndex + 1) % newChildren.length;
+						
+					}
+					
+					newChildren[tryIndex] = childi;
+				}
+				
+				int tryIndex = searchPosStart % newChildren.length;
+				
+				while (newChildren[tryIndex] != null) {
+					tryIndex = (tryIndex + 1) % newChildren.length;
+				}
+				
+				newChildren[tryIndex] = new DNode(c);
+				
+				children = newChildren;
+				return children[tryIndex];
+			}
+			
+		}
 	}
 	
 	public static void main(String[] args) throws FileNotFoundException {
